@@ -3,13 +3,18 @@
     :class="isMobile ? 'container-mobile' : 'container-desktop'"
     id="container"
   >
+    <v-overlay :value="isLoginLoading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <div class="form-container sign-up-container" v-if="!isMobile">
       <v-form ref="formCreate">
-      <v-container class="d-flex flex-column justify-center align-center px-10">
-        <h1>Crear Cuenta</h1>
-        <Social />
-        <span>o use su correo electronico para registrarse</span>
-        
+        <v-container
+          class="d-flex flex-column justify-center align-center px-10"
+        >
+          <h1>Crear Cuenta</h1>
+          <Social />
+          <span>o use su correo electronico para registrarse</span>
+
           <div class="inputs">
             <TextField placeholder="Usuaro" v-model="form.username" />
             <TextField
@@ -18,10 +23,12 @@
               v-model="form.password"
             />
           </div>
-   
-        <Btn @click="crear">Registrarse</Btn>
-      </v-container>
-           </v-form>
+          <v-alert dense type="error" v-if="response">
+            {{ response }}
+          </v-alert>
+          <Btn @click="crear">Registrarse</Btn>
+        </v-container>
+      </v-form>
     </div>
     <div :class="'form-container ' + mobileStyle">
       <v-form ref="form">
@@ -72,7 +79,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import Social from "../components/Social";
 import TextField from "../components/TextField";
 import Btn from "../components/Button";
@@ -108,12 +115,13 @@ export default {
       this.form.nombre = this.form.username;
       this.form.apellido = this.form.username;
       this.response = await this.createUser(this.form);
-      if(!this.response){
+      if (!this.response) {
         this.login();
       }
     },
   },
   computed: {
+    ...mapGetters("auth", ["isLoginLoading"]),
     isMobile() {
       return this.$vuetify.breakpoint.smAndDown;
     },

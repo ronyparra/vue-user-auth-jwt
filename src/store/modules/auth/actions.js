@@ -34,7 +34,7 @@ export default {
   },
   async createUser({ commit }, form) {
     commit(LOADING, true);
-    const response = await post('/userfake', form);
+    const response = await post('/userfake', form, 'disabledEvents');
     commit(LOADING, false);
     if (response.success) {
       return null;
