@@ -4,16 +4,24 @@
     id="container"
   >
     <div class="form-container sign-up-container" v-if="!isMobile">
+      <v-form ref="formCreate">
       <v-container class="d-flex flex-column justify-center align-center px-10">
         <h1>Crear Cuenta</h1>
         <Social />
         <span>o use su correo electronico para registrarse</span>
-        <div class="inputs">
-          <TextField placeholder="Usuaro" />
-          <TextField placeholder="Contraseña" />
-        </div>
-        <Btn>Registrarse</Btn>
+        
+          <div class="inputs">
+            <TextField placeholder="Usuaro" v-model="form.username" />
+            <TextField
+              password
+              placeholder="Contraseña"
+              v-model="form.password"
+            />
+          </div>
+   
+        <Btn @click="crear">Registrarse</Btn>
       </v-container>
+           </v-form>
     </div>
     <div :class="'form-container ' + mobileStyle">
       <v-form ref="form">
@@ -35,7 +43,9 @@
             {{ response }}
           </v-alert>
           <div class="d-flex flex-column align-center">
-            <a class="mt-n2" @click="$router.push('/recovery')">Olvido su contraseña?</a>
+            <a class="mt-n2" @click="$router.push('/recovery')"
+              >Olvido su contraseña?</a
+            >
             <Btn class="my-n2" @click="login">Iniciar Sesion</Btn>
           </div>
         </v-container>
@@ -81,7 +91,7 @@ export default {
     TextField,
   },
   methods: {
-    ...mapActions("auth", ["loginAction"]),
+    ...mapActions("auth", ["loginAction", "createUser"]),
     registerPanel() {
       this.container.classList.add("right-panel-active");
     },
@@ -92,6 +102,15 @@ export default {
     async login() {
       if (!this.$refs.form.validate()) return null;
       this.response = await this.loginAction(this.form);
+    },
+    async crear() {
+      if (!this.$refs.formCreate.validate()) return null;
+      this.form.nombre = this.form.username;
+      this.form.apellido = this.form.username;
+      this.response = await this.createUser(this.form);
+      if(!this.response){
+        this.login();
+      }
     },
   },
   computed: {

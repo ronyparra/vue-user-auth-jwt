@@ -32,6 +32,16 @@ export default {
       return response.data?.data?.message || response.message;
     }
   },
+  async createUser({ commit }, form) {
+    commit(LOADING, true);
+    const response = await post('/userfake', form);
+    commit(LOADING, false);
+    if (response.success) {
+      return null;
+    } else {
+      return response.data?.data?.message || response.message;
+    }
+  },
   logout({ commit }) {
     commit(LOGIN_RESET);
     removeToken();
